@@ -1,0 +1,71 @@
+Workshop 2: Processes
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Part 1 - Process states
+
+Question 0: What do the simulator flags do?
+- What does the -c flag do? --> Compute answers for me
+- What does the -p flag do? --> Print statistics at the end
+- What does -l 5:100,5:100 do? --> Produces a trace of what would happen if we run those processes.
+
+Question 1 (from the book)
+- Before running the simulation:
+   - What will this simulate? --> 
+   - How long should the final schedule be? --> 10 seconds
+   - What should the CPU utilization be? --> I'm guessing more than 90%, almost 100%
+- Run the program without -c and -p. Did you get what you expected? --> I believe I did. Each process has a total of 5 CPU's == 10 sec? and there are only CPU's so CPU utilization == 100%
+- Run the program with -c and -p. Does this make sense? If not, why not? --> Yeah, it does make sense.
+
+Question 2 (from the book)
+- Before you run the simulation:
+   - What will this simulate? --> 
+   - How long will it take to complete both processes? (Q: do you know how long an I/O takes?) --> I would say about 6 sec. I don't know how long an I/O takes tho
+   - If an I/O takes 5 time units, how long should this take to run? --> 11 sec
+- Run the program without -c and -p. Can you tell how long the simulation took? --> Not really, it seems like it was 6 sec
+- Run the program with -c and -p. How long did the I/O take? --> It took 5 sec
+- Run the program with -L 10. How long did the I/O take? What does -L do? --> It took 10 sec, then I believe what the -L does is tell the IO how long it should take.
+
+Question 3 (from the book)
+- Before you run the simulation:
+   - What will happen when you switch the order? --> It would run the IO first and while it runs it might run the CPU as well.
+   - Will the schedule take a different amount of time? Why? --> Maybe it takes less, if I'm right in the question above.
+- Run the program with -c and -p to see if you were right. Why did switching the order matter? --> Oh, I was right. It took less time because the CPU ran while the IO was running, it sort of stacked.
+
+Question 4 (from the book)
+- Before you run the simulation:
+   - Read the instructions. What will happen when you run the same processes as before but with the SWITCH_ON_END instead? --> It would take more time since the processes cannot run at the same time.
+   - How is this different/similar to what you saw in Questions 3 and 4? --> It is different because the second process is gonna have to wait for the first one to finish before running.
+- Run the program with -c and -p to see if you were right. --> It did take more time.
+
+Question 5 (from the book)
+- Read the instructions. How is this going to be different/similar to what you saw in Questions 3 and 4? --> Maybe it switches just when the IO starts to run, so both processes might be able to run at the same time.
+- Run the program with -c and -p to see if you were right. What can you conclude about the default value of -S? --> It is SWITCH_ON_IO
+
+Question 6 (from the book)
+- Before you run the simulation:
+   - Read the instructions. Would you generally expect IO_RUN_LATER to be more efficient? Why or why not? --> Probably not, because it is going to run just after everything else is finished. 
+   - Describe the list of processes being run in the problem. In particular, how many I/Os is the 3:0 going to issue? --> It is going to run 3 I/Os 
+   - When do you expect the the second I/O for the 3:0 process to be scheduled with IO_RUN_LATER? --> After the first IO finishes running. 
+- Run the program with -c and -p to see if you were right. Were you right? --> Yes, it waited for the whole thing to be runned before running the second IO.
+- Are system resources being effecitvely utilized? --> Not really, resources are not being used effectively.
+
+Question 7 (from the book)
+- Before you run the simluation:
+   - Read the instructions. What do you expect to happen with the I/Os from the 3:0 process? --> They are still gonna be 3 IOs, and each might "encapsulate" one of the other processes.
+   - Do you expect the schedule with IO_RUN_IMMEDIATE to be shorter or longer or the same? --> Shorter
+- Run the program with -c and -p to see if you were right. Were you right? --> Yes, it was in fact 10 sec shorter.
+- Are system resources being effecitvely utilized? What does “effectively” assume about the “goal” of the scheduler here? --> Yes, now it takes less time and uses less resources.
+- (Hint: what if you really cared about the second CPU process finishing soon? Which would be “efficient” then?) --> In that case, it could be efficient.
+
+Question 8 (from the book)
+- Before you run the simluation:
+   - Read the instructions. What does -s 1 vs. -s 2 do? --> One runs the IOs in one process, the other in both.
+   - How much I/O do you get with 3:50? --> 4
+- Run the programs without -c and -p to see which processes it generates. What do you expect the runtime of the schedules to be? (Do this once or twice.) --> 14 or 15
+- Run the program with -c and -p to see if you were right. --> I was right
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Part 2: Fork and Join
+

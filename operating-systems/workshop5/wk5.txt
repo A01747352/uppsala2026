@@ -1,0 +1,86 @@
+-----------------------------------------------------------------------------------------------------------------
+Part 1: Investigating a process’s memory layout
+
+In this part you will investigate how a process’s virtual memory space is layed out on your system
+by first looking at a very simple C program using vmstat and pmap and then at a real-world
+web browser.
+-----------------------------------------------------------------------------------------------------------------
+
+Preparation
+
+- How large are the three stack objects it is going to allocate?
+  --> stack1: 1*1024*1024 = 1,048,576 bytes (1 MiB)
+  --> stack2: 2*1024*1024 = 2,097,152 bytes (2 MiB)
+  --> stack3: 3*1024*1024 = 3,145,728 bytes (3 MiB)
+
+- How large are the three heap objects it is going to allocate?
+  --> a: 2*1024*1024 = 2,097,152 bytes (2 MiB)
+  --> b: 4*1024*1024 = 4,194,304 bytes (4 MiB)
+  --> c: 5*1024*1024 = 5,242,880 bytes (5 MiB)
+
+- When it free(b)s, what will happen with the next two allocations? Will they fit in the hole made
+by freeing b?
+  --> it would probably leave a hole between a and c of 4 MiB, d is smaller so it would fit, but e is larger so it won't
+
+- Compile it on macOS, Linux, or WSL with gcc -Wall -o memory_layout memory_layout.c.
+- Use vmmap -interleaved PID and Activity Monitor on macOS. (interleaved gives you every-
+thing in order)
+- Use pmap -x PID and vmstat on Linux or WSL.
+- For Windows host applications, use Task Manager or Resource Monitor. Inspect programs
+compiled in WSL with the Linux tools inside WSL.
+
+Step 1: Right after start
+
+- Run the program with memory_layout
+- After the first pause, run your tool to inspect the memory map.
+- Find where the program’s code is. It should include the text memory_layout since that is the
+name of the file it comes from.
+
+- Do you see a lot of files mapped into the address space? with names like “lib…”? What are these?
+Pick one and google what it is.
+  --> libc.so.6 is the core GNU C Library (glibc) file used as the standard C library for almost all programs on Linux operating systems.
+
+- Now try to find the stack. On a Mac it is labled nicely, but how would you find it on Linux?
+  --> I can see it in the pmap and it is this one: 00007ffc7e1f7000    6156    6152    6152 rw---   [ stack ]
+
+Step 3: The stack
+
+- Press enter in the program.
+- It will now print out the addresses of the three variables it put on the stack.
+- Re-run the tool to inspect the memory layout.
+- Find the stack based on the address printed out by the program.
+- Compare what is at this address from what was there in the previous memory layout. (You can restart
+ the program and do it again if you need to.) Did the size change when you allocated those stack 
+ objects? Did it change as much as you expected?
+  --> It didn't, first it was 00007ffc7e1f7000 then it still is 00007ffc7e1f7000
+
+Step 4: The heap
+
+- Press enter in the program.
+- It will now print out the addresses of the three heap allocations it made.
+- Re-run the tool to inspect the memory layout.
+- Find the region where the heap allocations were made.
+- How much of the regions are actually being used? (resident or RSS)
+
+- Now press enter in the program. The program will now write data to the heap allocations.
+- Re-run the tool to inspect the memory layout.
+- How much of those regions are now actually being used? (resident or RSS) How much of them
+are dirty?
+
+- Why is it good for the OS to only give the process memory when it actually accesses it instead
+of when it allocates it?
+
+- Now press enter in the program. The program will free(b).
+- Re-run the tool to inspect the memory layout.
+- Can you see where the b region was freed in the memory layout?
+- Now press enter in the program. The program will allocate another region which should fit into
+the space freed.
+- Re-run the tool to inspect the memory layout.
+- Did the memory get allocated in the freed space? How can you tell? What does the program
+output and what does the memory map tool tell you?
+
+- Now press enter in the program. The program will allocate another region which will not fit in
+the hole.
+- Re-run the tool to inspect the memory layout.
+- Can you see where this allocation was placed? (on Linux it will be of type ‘anon’=anonymous
+on a Mac it will be in a MALLOC zone.)
