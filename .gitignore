@@ -1,0 +1,4 @@
+
+# Large datasets / macOS archive junk
+*.npy
+__MACOSX/
